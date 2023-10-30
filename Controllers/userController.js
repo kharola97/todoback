@@ -23,8 +23,10 @@ const registerUser = async(req, res)=>{
      
     try {
      const data = req.body
-  
-    if(Object.keys(data).length==0 || !data.name || !data.email || !data.password) return res.status(400).send({status:false,message:"Enter all the details"})
+   
+    if(Object.keys(data).length==0 || !data.username || !data.email || !data.password) return res.status(400).send({status:false,message:"Enter all the details"})
+    
+
 
   const findUser = await userModel.findOne({$or:[{email:data.email}, {phone:data.phone}]}) 
  
@@ -34,10 +36,10 @@ const registerUser = async(req, res)=>{
  
   if(findUser.phone===data.phone) return res.status(400).send({status:false,message:"Phone already exists"})
   }
- 
-  if(!validator.isValidName(data.name)) return res.status(400).send({status:false, message:"name can only contain alphabets"})
-    data.name = data.name.toLowerCase().trim()
-console.log(data.name)
+  
+  if(!validator.isValidName(data.username)) return res.status(400).send({status:false, message:"name can only contain alphabets"})
+    data.username = data.username.toLowerCase().trim()
+
   if(!validator.isValidEmail(data.email)) return res.status(400).send({status:false, message:"Enter correct email -- example@website.com"})
   data.email = data.email.toLowerCase().trim()
 if(!validator.isValidMobile(data.phone)) return res.status(400).send({status:false, message:"Invalid phone number"})
@@ -60,15 +62,18 @@ const loginUser = async(req, res)=>{
     try {
     const {email, password} = req.body
     
+    if(!validator.isValidEmail(email)) return res.status(400).send({status:false, message:"Enter correct email -- example@website.com"})
+
     const findUser = await userModel.findOne({email:email})
     
-    if(!findUser) return res.status(400).send({status:false, message:"Email doesnt exists"})
     
+    if(Object.keys(findUser).length===0) return res.status(400).send({status:false, message:"Email doesnt exists"})
     if(findUser){
         bcrypt.compare(password, findUser.password, function(err, result){
             if(result) {
-                let token = jwt.sign({id:findUser._id}, "secret-key", {expiresIn:"1h"})
-    
+                let token = jwt.sign({id:findUser._id}, "secret-key", {expiresIn:"24h"})
+                res.setHeader("Authorization", token)
+                
                 return res.status(200).send({status:true, message:"You have successfully logged in",data:token})
             }
             else{

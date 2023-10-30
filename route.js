@@ -10,7 +10,9 @@ router.post("/login", userController.loginUser)
 router.post("/task/:userId", middleware.authentication, taskController.createTask)
 router.post("/taskdone/:userId/:taskId",middleware.authentication,middleware.authorization, taskController.taskDone)
 
-router.get("/gettasks", taskController.getPendingTasks)
+router.get("/gettasks/:userId", taskController.getPendingTasks)
+router.get("/completedtasks/:userId", taskController.getCompletedTasks)
+router.get("/alltasks/:userId", taskController.getAllTasks)
 
 
 
