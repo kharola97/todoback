@@ -2,7 +2,7 @@ const userModel = require("../Models/userModel")
 const validator = require("../validator/Validations")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
-
+require("dotenv").config() 
 
 // password hashing using bcrypt library
 const passwordhash = async function(password){
@@ -71,7 +71,7 @@ const loginUser = async(req, res)=>{
     if(findUser){
         bcrypt.compare(password, findUser.password, function(err, result){
             if(result) {
-                let token = jwt.sign({id:findUser._id}, "secret-key", {expiresIn:"24h"})
+                let token = jwt.sign({id:findUser._id}, process.env.Secret_key, {expiresIn:"24h"})
                 res.setHeader("Authorization", token)
                 
                 return res.status(200).send({status:true, message:"You have successfully logged in",data:token})

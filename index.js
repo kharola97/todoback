@@ -3,8 +3,11 @@ const app = express()
 const mongoose = require("mongoose")
 const cors = require("cors")
 const route = require("./route")
+
 app.use(cors())
 app.use(cors({ credentials: true, origin: true }));
+
+require("dotenv").config() 
 
 app.use(express.json())
 app.use((req, res, next) => {
@@ -22,8 +25,10 @@ app.use((req, res, next) => {
     next();
   });
 
+  const url = process.env.DB_URL
+  const PORT = process.env.PORT || 4000
 
-mongoose.connect("mongodb+srv://ankitdb:ankit321@cluster0.nz06g9j.mongodb.net/todolist?retryWrites=true&w=majority", {
+mongoose.connect(url, {
     useNewUrlParser: true
 })
 .then(()=>console.log("MongoDB is connected"))
@@ -31,6 +36,6 @@ mongoose.connect("mongodb+srv://ankitdb:ankit321@cluster0.nz06g9j.mongodb.net/to
 
 app.use("/", route)
 
-app.listen(4000, function(){
+app.listen(PORT, function(){
     console.log("port is running on port 4000")
 })
